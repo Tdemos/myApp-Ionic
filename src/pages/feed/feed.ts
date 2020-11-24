@@ -10,16 +10,17 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
-  selector: 'page-feed',
-  templateUrl: 'feed.html',
+    selector: 'page-feed',
+    templateUrl: 'feed.html',
 })
 export class FeedPage {
+    constructor(public navCtrl: NavController, public navParams: NavParams) {
+    }
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+    public nome_usuario: string = "Cassio Glay";
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad FeedPage');
-  }
+    ionViewDidLoad() {
+        console.log('ionViewDidLoad FeedPage');
+    }
 
 }

@@ -9,5 +9,8 @@ import { FeedPage } from './feed';
   imports: [
     IonicPageModule.forChild(FeedPage),
   ],
+  exports:[
+    FeedPage
+  ]
 })
 export class FeedPageModule {}
