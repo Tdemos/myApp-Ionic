@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { MovieProvider } from '../../providers/movie/movie';
+import { DetailsMoviePage } from '../details-movie/details-movie';
+
+
 
 /**
  * Generated class for the FeedPage page.
@@ -18,30 +21,73 @@ import { MovieProvider } from '../../providers/movie/movie';
     ]
 })
 export class FeedPage {
+
+    public movies = new Array<any>();
+    public loading;
+    public refresh;
+    public isRefresh;
+
     constructor(
         public navCtrl: NavController,
         public navParams: NavParams,
-        private movieProvider: MovieProvider
+        private movieProvider: MovieProvider,
+        public loadingController: LoadingController
     ) {
     }
 
-    public movies = new Array<any>();
+    openLoading() {
+        this.loading = this.loadingController.create({
+            content: 'Please wait...'
+        });
 
-    public nome_usuario: string = "Cassio Glay";
+        this.loading.present();
 
-    ionViewDidLoad() {
+    }
 
+    closeLoading() {
+        this.loading.dismiss();
+    }
+
+    doRefresh(refresh) {
+
+        this.refresh = refresh;
+        this.isRefresh = true;
+
+        this.loadMovies();
+    }
+
+    loadMovies() {
+        this.openLoading();
         this.movieProvider.getLastMovies().subscribe(data => {
             const response = data as any;
 
             this.movies = response.results;
 
-            console.log(this.movies);
+            this.closeLoading();
+            if (this.refresh) {
+                this.refresh.complete();
+                this.isRefresh = false;
+            }
 
         }, error => {
             console.log(error);
+
+            this.closeLoading();
+            if (this.refresh) {
+                this.refresh.complete();
+                this.isRefresh = false;
+            }
         }
         )
+
+    }
+
+    goToDetails(movie) {
+        this.navCtrl.push(DetailsMoviePage, { id: movie.id });
+    }
+
+    ionViewDidEnter() {
+        this.loadMovies();
     }
 
 }
