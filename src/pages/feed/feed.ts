@@ -23,9 +23,12 @@ import { DetailsMoviePage } from '../details-movie/details-movie';
 export class FeedPage {
 
     public movies = new Array<any>();
+    public page = 1;
+    public infiniteScroll;
+
     public loading;
     public refresh;
-    public isRefresh;
+    public isRefresh: boolean = false;
 
     constructor(
         public navCtrl: NavController,
@@ -33,6 +36,42 @@ export class FeedPage {
         private movieProvider: MovieProvider,
         public loadingController: LoadingController
     ) {
+    }
+
+
+    loadMovies(newPage: boolean = false) {
+        this.openLoading();
+        this.movieProvider.getLastMovies(this.page).subscribe(data => {
+            const response = data as any;
+
+            if (newPage) {
+
+                this.movies = this.movies.concat(response.results);
+                this.infiniteScroll.complete();
+
+            } else {
+
+                this.movies = response.results;
+
+            }
+
+            this.closeLoading();
+            if (this.refresh) {
+                this.refresh.complete();
+                this.isRefresh = false;
+            }
+
+        }, error => {
+            console.log(error);
+
+            this.closeLoading();
+            if (this.refresh) {
+                this.refresh.complete();
+                this.isRefresh = false;
+            }
+        }
+        )
+
     }
 
     openLoading() {
@@ -56,30 +95,23 @@ export class FeedPage {
         this.loadMovies();
     }
 
-    loadMovies() {
-        this.openLoading();
-        this.movieProvider.getLastMovies().subscribe(data => {
-            const response = data as any;
+    loadMoreMovies(infiniteScroll) {
+        this.page++;
+        this.infiniteScroll = infiniteScroll;
+        this.loadMovies(true);
 
-            this.movies = response.results;
+        infiniteScroll.complete();
 
-            this.closeLoading();
-            if (this.refresh) {
-                this.refresh.complete();
-                this.isRefresh = false;
-            }
-
-        }, error => {
-            console.log(error);
-
-            this.closeLoading();
-            if (this.refresh) {
-                this.refresh.complete();
-                this.isRefresh = false;
-            }
-        }
-        )
-
+        /*  setTimeout(() => {
+           console.log('Done');
+           event.complete();
+     
+           // App logic to determine if all data is loaded
+           // and disable the infinite scroll
+           if (this.movies.length == 20) {
+             event.disabled = true;
+           }
+         }, 500); */
     }
 
     goToDetails(movie) {

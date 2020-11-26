@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content padding>
-	
+
 	<ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>
@@ -49,8 +49,14 @@
 				</ion-note>
 			</ion-col>
 		</ion-row>
-		
+
 		<button ion-button block (click)="goToDetails(movie)">Details</button>
 
 	</ion-card>
+
+	<ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreMovies($event)">
+		<ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more movies...">
+		</ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+
 </ion-content>
